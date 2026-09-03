@@ -27,10 +27,20 @@ const [showSearch, setShowSearch] = useState(false)
       </div>
 {    /*  NAVBAR FOR MOBILE & DESKTOP */}
 <div className ="flex-1">
-  <Navbar setMenuOpened={setMenuOpened} containerStyles={`${menuOpened ? "flex" : "hidden"}`} />
+
+  <Navbar
+    setMenuOpened={setMenuOpened}
+    containerStyles={`${menuOpened ? "flex items-start flex-col gap-y-8 fixed top-16 right-6 p-5 bg-white rounded-xl shadow-md w-52 ring-1 ring-slate-900/5 z-50" : "hidden lg:flex gap-x-5  xl:gap-x-7  medium-15 ring-1 ring-slate-900/15 rounded-full p-1 bg-primary "}`}
+  />
      
     
-  </div>      
+  </div>  
+      <div>
+        {/* SEARCH BAR */}
+        <div className="flex items-center gap-2">
+          </div>
+
+      </div>
     </header>
   )
 }
