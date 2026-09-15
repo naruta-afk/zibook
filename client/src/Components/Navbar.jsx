@@ -9,7 +9,7 @@ const navItem = [
   { to: '/shop', label: 'Shop', icon: <IoLibraryOutline /> },
   { to: '/blog', label: 'Blog', icon: <TbBrandBlogger /> },
   {
-    to: 'mailto:infozibook.com',
+    to: '/contact',
     label: 'Contact',
     icon: <PiEnvelopeOpenDuotone />,
   },
@@ -24,11 +24,11 @@ const Navbar = ({ containerStyles, setMenuOpened }) => {
             to={to}
             onClick={() => setMenuOpened?.(false)}
             className={({ isActive }) =>
-              `${isActive ? 'bg-white ring-1 ring-slate-900/10' : ''} flexCenter gap-x-2 rounded-full px-3 py-1.5`
+              `${isActive ? 'bg-white ring-1 ring-slate-900/10' : ''} flexCenter gap-x-2 rounded-full px-4 py-2`
             }
           >
-            <span className="text-xl">{icon}</span>
-            <span className="medium-16">{label}</span>
+            <span className="text-lg">{icon}</span>
+            <span className="medium-15">{label}</span>
           </NavLink>
         </div>
       ))}
