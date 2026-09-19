@@ -9,12 +9,14 @@ import {FaSearch} from 'react-icons/fa'
 import Navbar from './Navbar'
 import Login from './Login'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
+  const { logout } = useAuth()
 
-const [menuOpened, setMenuOpened] = useState(false)
-const [showSearch, setShowSearch] = useState(false)
-const [user, setUser] = useState(() => {
+  const [menuOpened, setMenuOpened] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
+  const [user, setUser] = useState(() => {
   try {
     return Boolean(localStorage.getItem('zibookUser'))
   } catch {
@@ -66,9 +68,9 @@ const toggleMenu = () => {
     navigate('/shop')
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout()
     setUser(false)
-    localStorage.removeItem('zibookUser')
     toast('Logged out', { icon: '👋' })
     navigate('/')
   }

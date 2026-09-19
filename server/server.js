@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import connectDB from './config/mongodb.js';
 import userRouter from './routes/userRoute.js';
+import adminRouter from './routes/adminRoute.js';
 
 
 
@@ -28,9 +29,15 @@ app.use(cors({
 // Routes
 
 app.use('/api/user', userRouter);
+app.use('/api/admin', userRouter);
 
 
 
 // Root routeendpoint to check QPI status
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'Server is runn
+    res.status(200).json({ message: 'Server is running' });
+});
+//
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});

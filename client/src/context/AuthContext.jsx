@@ -34,7 +34,19 @@ const AuthProvider = ({ children }) => {
     return nextUser
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('http://localhost:5000/api/user/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {
+      console.warn('Logout request failed:', error)
+    }
+
     localStorage.removeItem('zibookUser')
     setUser(null)
     window.dispatchEvent(new Event('zibook-auth-change'))
