@@ -7,4 +7,4 @@ const connectCloudinary = () => {cloudinary.config({
     })
 }
 
-export default connectCloudinary();
+export default connectCloudinary;
