@@ -8,6 +8,7 @@ import adminRouter from './routes/adminRoute.js';
 
 import connectCloudinary from './config/cloudinary.js';
 import productRouter from './routes/productRoute.js';
+import addressRouter from './routes/addressRoute.js';
 import cartRouter from './routes/cartRoute.js';
 
 
@@ -37,6 +38,7 @@ app.use(cors({
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/product',productRouter);
+app.use('/api/address', addressRouter);
 app.use('/api/cart',cartRouter);
 
 

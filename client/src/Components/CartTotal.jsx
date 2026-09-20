@@ -11,7 +11,7 @@ const CartTotal = ({ itemCount = 0, subtotal = 0, shipping = 0, tax = 0, total =
       <div className="border-b border-slate-300 pb-5">
         <div className="flex items-center justify-between gap-4">
           <h3 className="font-semibold text-slate-800">Where to ship your order?</h3>
-          <button type="button" onClick={onAddressChange} className="text-sm font-medium text-violet-500">Change</button>
+          <Link to="/checkout" className="text-sm font-medium text-violet-500">Change</Link>
         </div>
         <p className="mt-3 text-sm text-slate-500">{address || 'No address found'}</p>
       </div>
