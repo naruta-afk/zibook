@@ -40,10 +40,14 @@ const CartProvider = ({ children }) => {
     saveCart(cartItems.filter((item) => item._id !== id))
   }
 
+  const clearCart = () => {
+    saveCart([])
+  }
+
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ cartItems, cartCount, addToCart, updateQuantity, removeFromCart }}>
+    <CartContext.Provider value={{ cartItems, cartCount, addToCart, updateQuantity, removeFromCart, clearCart }}>
       {children}
     </CartContext.Provider>
   )

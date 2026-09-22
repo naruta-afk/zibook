@@ -8,11 +8,12 @@ import { FaBarsStaggered, FaBars } from 'react-icons/fa6'
 import {FaSearch} from 'react-icons/fa'
 import Navbar from './Navbar'
 import Login from './Login'
+import { api } from '../api'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
-  const { logout } = useAuth()
+  const { logout, login: authLogin } = useAuth()
 
   const [menuOpened, setMenuOpened] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -50,22 +51,38 @@ const toggleMenu = () => {
     setShowSearch(false)
   }
 
-  const handleLogin = ({ email, password }) => {
+  const handleLogin = async ({ email, password }) => {
     if (!email || !password) return
 
-    setUser(true)
-    localStorage.setItem('zibookUser', JSON.stringify({ email }))
-    setIsLoginOpen(false)
-    toast.success('Logged in successfully')
-    navigate('/my-orders')
+    try {
+      const { data } = await api.post('/api/user/login', { email, password })
+      if (!data.success) throw new Error(data.message || 'Login failed')
+
+      authLogin(data.user)
+      setUser(true)
+      setIsLoginOpen(false)
+      toast.success('Logged in successfully')
+      navigate('/my-orders')
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Unable to login')
+    }
   }
 
-  const handleRegister = ({ name, email }) => {
-    setUser(true)
-    localStorage.setItem('zibookUser', JSON.stringify({ name, email }))
-    setIsLoginOpen(false)
-    toast.success('Account created successfully')
-    navigate('/shop')
+  const handleRegister = async ({ name, email, password }) => {
+    if (!name || !email || !password) return
+
+    try {
+      const { data } = await api.post('/api/user/register', { name, email, password })
+      if (!data.success) throw new Error(data.message || 'Registration failed')
+
+      authLogin(data.user)
+      setUser(true)
+      setIsLoginOpen(false)
+      toast.success('Account created successfully')
+      navigate('/shop')
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Unable to create account')
+    }
   }
 
   const handleLogout = async () => {

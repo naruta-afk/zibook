@@ -1,11 +1,16 @@
 import { Link, useParams } from 'react-router-dom'
-import { dummyBooks } from '../assets/data'
 import { useCart } from '../context/CartContext'
+import { useShop } from '../context/ShopContext'
 
 const ProductDetails = () => {
   const { id } = useParams()
   const { addToCart } = useCart()
-  const book = dummyBooks.find((item) => item._id === id)
+  const { getBookById, loading } = useShop()
+  const book = getBookById(id)
+
+  if (loading) {
+    return <p className="max-padd-container py-20 text-center text-slate-500">Loading book...</p>
+  }
 
   if (!book) {
     return (

@@ -1,22 +1,90 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import CartTotal from '../Components/CartTotal'
+import { api } from '../api'
 import { useCart } from '../context/CartContext'
+import { useShop } from '../context/ShopContext'
 
 const Cart = () => {
-  const { cartItems: items, updateQuantity, removeFromCart } = useCart()
+  const navigate = useNavigate()
+  const { cartItems: items, updateQuantity, removeFromCart, clearCart } = useCart()
+  const { deliveryCharges, taxRate } = useShop()
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery')
-  const [address, setAddress] = useState('789 Elm Street, Springfield, California, US')
+  const [addresses, setAddresses] = useState([])
+  const [selectedAddressId, setSelectedAddressId] = useState('')
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const { data } = await api.get('/api/address/get')
+        if (!data.success) throw new Error(data.message || 'Address load failed')
+        setAddresses(data.addresses || [])
+        if (data.addresses?.[0]?._id) {
+          setSelectedAddressId(data.addresses[0]._id)
+        }
+      } catch (error) {
+        setAddresses([])
+      }
+    }
+
+    fetchAddresses()
+  }, [])
+
+  const selectedAddress = useMemo(
+    () => addresses.find((address) => address._id === selectedAddressId) || addresses[0],
+    [addresses, selectedAddressId],
+  )
+
+  const addressText = selectedAddress
+    ? `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.country}`
+    : 'No address found'
 
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
-  const shipping = subtotal > 0 ? 10 : 0
-  const tax = subtotal * 0.02
+  const shipping = subtotal > 0 ? deliveryCharges : 0
+  const tax = subtotal * taxRate
   const total = subtotal + shipping + tax
 
-  const placeOrder = () => {
-    if (!items.length) return
-    toast.success('Order placed successfully')
+  const placeOrder = async () => {
+    if (!items.length) {
+      toast.error('Your cart is empty.')
+      return
+    }
+
+    if (!selectedAddressId) {
+      toast.error('Please add a delivery address first.')
+      navigate('/checkout')
+      return
+    }
+
+    setIsPlacingOrder(true)
+
+    try {
+      const payload = {
+        items: items.map((item) => ({ product: item._id, quantity: item.quantity })),
+        address: selectedAddressId,
+      }
+
+      if (paymentMethod === 'Stripe') {
+        const { data } = await api.post('/api/order/stripe/create-checkout-session', payload)
+        if (!data.success) throw new Error(data.message || 'Stripe checkout failed')
+        if (data.url) {
+          window.location.href = data.url
+        }
+        return
+      }
+
+      const { data } = await api.post('/api/order/cod', payload)
+      if (!data.success) throw new Error(data.message || 'Order failed')
+      clearCart()
+      toast.success(data.message || 'Order placed successfully')
+      navigate('/my-orders')
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Something went wrong')
+    } finally {
+      setIsPlacingOrder(false)
+    }
   }
 
   return (
@@ -48,7 +116,7 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
-              <span className="text-right text-sm text-slate-600">${item.price * item.quantity}</span>
+              <span className="text-right text-sm text-slate-600">${(item.price * item.quantity).toFixed(2)}</span>
               <button type="button" onClick={() => removeFromCart(item._id)} className="justify-self-end text-sm font-semibold text-violet-500 transition hover:text-red-500">Delete</button>
             </div>
           )) : (
@@ -70,12 +138,12 @@ const Cart = () => {
           shipping={shipping}
           tax={tax}
           total={total}
-          address={address}
+          address={addressText}
           paymentMethod={paymentMethod}
-          onAddressChange={() => setAddress('137 Library Avenue, New York')}
+          onAddressChange={() => navigate('/checkout')}
           onPaymentChange={setPaymentMethod}
           onPlaceOrder={placeOrder}
-          disabled={!items.length}
+          disabled={!items.length || isPlacingOrder}
         />
       </div>
     </div>

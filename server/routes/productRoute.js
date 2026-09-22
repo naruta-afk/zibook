@@ -4,10 +4,10 @@ import authAdmin from '../middlewares/authAdmin.js'
 import express from 'express';
 const productRouter = express.Router();
 
-
-productRouter.post('/add', upload.array("images"),authAdmin  ,addProduct);
-productRouter.get('/list'  ,listProducts);
-productRouter.post('/single'  , singleProduct);
-productRouter.post('/stock'  , changeStock);
+// authAdmin runs first so unauthenticated requests never get to upload files
+productRouter.post('/add', authAdmin, upload.array("images"), addProduct);
+productRouter.get('/list', listProducts);
+productRouter.post('/single', singleProduct);
+productRouter.post('/stock', authAdmin, changeStock);
 
 export default productRouter

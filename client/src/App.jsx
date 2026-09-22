@@ -14,6 +14,7 @@ import AdressForm from './Pages/AdressForm'
 import CartProvider from './context/CartContext'
 import AuthProvider from './context/AuthContext'
 import AdminProvider from './context/AdminContext'
+import ShopProvider from './context/ShopContext'
 import AdminLogin from './Components/admin/adminlogin'
 import AdminDashboard from './Components/admin/AdminDashboard'
 import AddProduct from './Pages/admin/AddProduct'
@@ -46,6 +47,7 @@ const App = () => {
   return (
     <AuthProvider>
       <AdminProvider>
+        <ShopProvider>
         <CartProvider>
           <main className="min-h-screen bg-white text-slate-800">
             {!isAdminPage && <Header />}
@@ -70,9 +72,10 @@ const App = () => {
                
               </Route>
             </Routes>
-            <Footer />
+            {!isAdminPage && <Footer />}
           </main>
         </CartProvider>
+        </ShopProvider>
       </AdminProvider>
     </AuthProvider>
   )

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { api } from '../api'
 
 const AdressForm = () => {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', street: '', city: '', state: '', country: '', zipcode: '', phone: '' })
@@ -14,17 +15,14 @@ const AdressForm = () => {
     setIsSaving(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/address/add', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, zipcode: Number(form.zipcode), phone: Number(form.phone) }),
+      // the server expects the fields inside an `address` object
+      const { data } = await api.post('/api/address/add', {
+        address: { ...form, zipcode: Number(form.zipcode), phone: Number(form.phone) },
       })
-      const result = await response.json()
-      if (!result.success) throw new Error(result.message)
+      if (!data.success) throw new Error(data.message)
       toast.success('Address saved successfully')
     } catch (error) {
-      toast.error(error.message || 'Could not save address')
+      toast.error(error.response?.data?.message || error.message || 'Could not save address')
     } finally {
       setIsSaving(false)
     }

@@ -1,12 +1,14 @@
 import { useParams, Link } from 'react-router-dom'
-import { dummyBooks, categories } from '../assets/data'
+import { categories } from '../assets/data'
 import BookCard from '../Components/BookCard'
+import { useShop } from '../context/ShopContext'
 
 const CategoryShop = () => {
   const { category } = useParams()
+  const { getBooksByCategory } = useShop()
   const normalizedCategory = category ? category.charAt(0).toUpperCase() + category.slice(1) : ''
   const selectedCategory = categories.find((item) => item.name.toLowerCase() === normalizedCategory.toLowerCase())
-  const books = dummyBooks.filter((book) => book.category.toLowerCase() === normalizedCategory.toLowerCase())
+  const books = getBooksByCategory(normalizedCategory)
 
   if (!selectedCategory) {
     return (

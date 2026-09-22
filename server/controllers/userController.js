@@ -28,7 +28,7 @@ try{
          const newUser = await new User({name ,email ,password : hashedPassword});
          const user = await newUser.save();
          // Generate token
-         const token = jwt.sign({userId : newUser._id} , process.env.JWT_SECRET , {expiresIn : '1h'});
+         const token = jwt.sign({userId : newUser._id} , process.env.JWT_SECRET , {expiresIn : '7d'});
 
          res.cookie('token', token, {
             ...cookieOptions,

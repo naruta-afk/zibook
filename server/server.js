@@ -23,12 +23,18 @@ await  connectDB() // Connect to the database
 await connectCloudinary(); // Connect to Cloudinary
 
 //Allow multiple origins 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['http://localhost:5173', process.env.CLIENT_URL].filter(Boolean);
 // Middleware setup 
 app.use(express.json()); // Enable JSON parsing for incoming requests
 app.use(cookieParser()); // cookies-parser moddleware
 app.use(cors({
-    origin: allowedOrigins,// whitelist of allowed origins
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+            return
+        }
+        callback(new Error('Origin not allowed by CORS'))
+    },
     credentials: true, // Allow cookies to be sent with requests
 }))
 

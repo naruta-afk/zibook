@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { api } from '../api'
 
 const AuthContext = createContext(null)
 
@@ -36,13 +37,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:5000/api/user/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      await api.post('/api/user/logout')
     } catch (error) {
       console.warn('Logout request failed:', error)
     }

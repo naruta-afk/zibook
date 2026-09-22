@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom'
 import { FiShoppingCart } from 'react-icons/fi'
-import { categories, dummyBooks } from '../assets/data'
+import { categories } from '../assets/data'
 import Categories from '../Components/Categories'
 import heroBackground from '../assets/bg.png'
 import { useCart } from '../context/CartContext'
-
-const featuredBooks = dummyBooks.filter((book) => book.popular).slice(0, 7)
-const popularProducts = dummyBooks.filter((book) => book.popular).slice(0, 5)
+import { useShop } from '../context/ShopContext'
 
 const Home = () => {
   const { addToCart } = useCart()
+  const { books } = useShop()
+  const featuredBooks = books.filter((book) => book.popular).slice(0, 7)
+  const popularProducts = books.filter((book) => book.popular).slice(0, 5)
 
   return (
     <div className="pb-16">
@@ -36,7 +37,7 @@ const Home = () => {
       </section>
 
       <section className="max-padd-container py-10">
-        <Categories items={categories.map((category) => ({ ...category, count: dummyBooks.filter((book) => book.category === category.name).length }))} />
+        <Categories items={categories.map((category) => ({ ...category, count: books.filter((book) => book.category === category.name).length }))} />
       </section>
 
       <section className="max-padd-container py-10">
@@ -50,7 +51,7 @@ const Home = () => {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {dummyBooks.slice(0, 5).map((book, index) => {
+          {books.slice(0, 5).map((book, index) => {
             const cardStyles = ['bg-[#e7f1f0]', 'bg-[#edf3f1]', 'bg-[#e8f1f0]', 'bg-[#e9f2f1]', 'bg-[#e6f0ef]']
 
             return (

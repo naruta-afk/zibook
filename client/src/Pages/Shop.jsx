@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
-import { categories, dummyBooks } from '../assets/data'
+import { categories } from '../assets/data'
 import BookCard from '../Components/BookCard'
+import { useShop } from '../context/ShopContext'
 
 const Shop = () => {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchParams, setSearchParams] = useSearchParams()
+  const { books, loading } = useShop()
 
   const querySearch = searchParams.get('search') || ''
   const activeSearch = search || querySearch
@@ -15,13 +17,13 @@ const Shop = () => {
   const filteredBooks = useMemo(() => {
     const searchTerm = activeSearch.trim().toLowerCase()
 
-    return dummyBooks.filter((book) => {
+    return books.filter((book) => {
       const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory
       const matchesSearch = !searchTerm || `${book.name} ${book.category} ${book.description}`.toLowerCase().includes(searchTerm)
 
       return matchesCategory && matchesSearch
     })
-  }, [activeSearch, selectedCategory])
+  }, [books, activeSearch, selectedCategory])
 
   const addToCart = (book) => {
     toast.success(`${book.name} added to cart`)
@@ -65,7 +67,9 @@ const Shop = () => {
         </label>
       </div>
 
-      {filteredBooks.length > 0 ? (
+      {loading ? (
+        <p className="py-20 text-center text-slate-500">Loading books...</p>
+      ) : filteredBooks.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filteredBooks.map((book) => <BookCard key={book._id} book={book} addToCart={addToCart} />)}
         </div>
